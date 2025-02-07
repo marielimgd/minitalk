@@ -1,1 +1,1 @@
-# minitalk
+Minitalk is a 42 School project that implements a simple client-server communication using UNIX signals (SIGUSR1 and SIGUSR2). The client sends a string to the server, which reconstructs and prints the message.

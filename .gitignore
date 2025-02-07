@@ -1,0 +1,9 @@
+*.out
+*.pdf
+*Zone.Identifier
+# *main*
+*test*
+*Test*
+*tester*
+*Tester*
+*json
