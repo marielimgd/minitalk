@@ -1,60 +1,56 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 19:54:13 by marieli           #+#    #+#             */
+/*   Updated: 2025/02/14 15:52:08 by mmariano         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include "../includes/libft.h"
 #include "../includes/minitalk.h"
 
-void print_binary(unsigned int number)
+void process_signal (int signal)
 {
-    if (number >> 1) {
-        print_binary(number >> 1);
-    }
-    putc((number & 1) ? '1' : '0', stdout);
+    static unsigned char    c; //guarda o valor do char recebido
+    static int              bit; //guarda o index do bit
+
+    // Set the current bit in 'c' based on the signal
+    c |= (signal == SIGUSR1) << (7 - bit); //checka se o bit recebido é 0 ou 1 e performa | para cada bit
+    bit++;
+    
+    // If 8 bits have been received, print c
+    if (bit == 8) 
+    {
+        if (c == '\0') // End of message
+            write(1, "\n", 1);
+        else
+            write(1, &c, 1);
+        bit = 0;
+        c = 0; // Reset for the next character        
+    }    
 }
 
-void	process_signal(int signum, siginfo_t *s_info, void *context)
+int main(void)
 {
-	static char	c = 0;
-	static int	bits = 0;
-	static int	pid = 0;
+    struct sigaction action;
+    
+    //setting the signal handles
+    action.sa_handler = process_signal; //process  SIGUSR1 and SIGUSR2.
+    action.sa_flags = SA_RESTART; //restart the system calls after the interruption by the signals
+    sigemptyset(&action.sa_mask); //ensure no signals are blocked during handler execution
 
-	(void)context;
-
-	pid = s_info->si_pid;
-	
-	if (signum == SIGUSR1)
-		c |= (0 << (7 - bits));
-	else if (signum == SIGUSR2)
-		c |= (1 << (7 - bits));
-	bits++;
-	if (bits == BIT)
-	{
-		if (c)
-			write(1, &c, 1);
-		else
-			write(1, "\n", 1);
-		bits = 0;
-		c = 0;
-	}
-
-	if (kill(pid, SIGUSR1) == SIG_ERROR)
-	{
-		kill(pid, SIGUSR2);
-		exit(EXIT_FAILURE);
-	}
-}
-
-int	main(void)
-{
-	struct sigaction sa_sig;
-
-	sigemptyset(&sa_sig.sa_mask);
-	sigaddset(&sa_sig.sa_mask, SIGINT);
-	sigaddset(&sa_sig.sa_mask, SIGQUIT);
-	sa_sig.sa_handler = 0;
-	sa_sig.sa_flags = SA_SIGINFO;
-	sa_sig.sa_sigaction = process_signal;
-	sigaction(SIGUSR1, &sa_sig, NULL);
-	sigaction(SIGUSR2, &sa_sig, NULL);
-	ft_printf("PID: %d\n", getpid());
-	while (1)
-		pause();
+    // Register the signal handler for SIGUSR1 and SIGUSR2
+    sigaction(SIGUSR1, &action, NULL);
+    sigaction(SIGUSR2, &action, NULL);
+    
+    //print the PID
+    ft_printf("%d\n", getpid());
+    
+    //wait for the signal
+    while(1)
+        pause();
+    return(0);
 }

@@ -1,64 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 19:54:02 by marieli           #+#    #+#             */
+/*   Updated: 2025/02/14 15:52:00 by mmariano         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include "../includes/libft.h"
 #include "../includes/minitalk.h"
 
-int	send_message(int pid, char *str)
+void send_signal(int pid, unsigned char c)
 {
-	static char	*message = NULL;
-	static int	s_pid = 0;
-	static int	bits = 0;
+	int bit;
 
-	if (str)
+	bit = 8;
+	while (bit > 0)
 	{
-		message = ft_strdup(str);
-		if (!message)
-			send_error(NULL, 0, 0);
+		bit--;
+		if ((c >> bit) & 1) // extract the curent bit from MSB to LSB
+			kill(pid, SIGUSR1); // Send SIGUSR1 if bit = 1
+		else
+			kill(pid, SIGUSR2); // Send SIGUSR2 if bit = 0
+		usleep(42);
 	}
-	if (pid)
-		s_pid = pid;
-	if (message[bits / BIT])
-	{
-		if (message[bits / BIT] & (1 << (7 - (bits % BIT))))
-		{
-			if (kill(s_pid, SIGUSR2) == SIG_ERROR)
-				send_error(message, s_pid, SIGUSR2);
-		}
-		else if (kill(s_pid, SIGUSR1) == SIG_ERROR)
-			send_error(message, s_pid, SIGUSR1);
-		bits++;
-		return (0);
-	}
-	if (!send_null(s_pid, message))
-		return (0);
-	free(message);
-	message = NULL;
-	return (1);
 }
 
-int	main(int argc, char **argv)
-{
-	int	pid;
+int main(int argc, char **argv)
+{	
+	int			pid;
+	const char	*message;
+	int			c;
 
 	if (argc != 3)
 	{
-		ft_printf("Error: Incorrect number of arguments!\n");
-		ft_printf("Try: %s <PID> \"<MESSAGE>\"\n", argv[0]);
-		exit(1);
+		ft_printf("Usage: %s <pid> <message>\n", argv[0]);
+		exit(0);
 	}
-	signal(SIGUSR1, &handler_sig);
-	signal(SIGUSR2, &handler_sig);
+
+	// Parse server PID and message
 	pid = ft_atoi(argv[1]);
-	if (pid <= 0)
-	{
-		ft_printf("Error: %s is an invalid PID\n", argv[1]);
-		exit(1);
-	}
-	if (!argv[2] || !*argv[2])
-	{
-		ft_printf("Error: Message is empty\n");
-		exit(1);
-	}
-	send_message(pid, argv[2]);
-	while (1)
-		pause();
+	message = argv[2];
+	c = 0;
+	while(message[c])
+		send_signal(pid, message[c++]);
+	send_signal(pid, '\0');
+	return(0);
 }

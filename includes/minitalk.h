@@ -1,20 +1,15 @@
 #ifndef MINITALK_H
 # define MINITALK_H
 
-#include <unistd.h> // For write, getpid, pause, usleep
-#include <signal.h> // For signal, sigaction, kill
-#include <stdlib.h> // For malloc, free, exit
-#include <stdio.h>  // For printf (debugging only, avoid in signal handlers)
+#include <signal.h> //for signal function
+#include <stdio.h> //for printf
+#include <stdlib.h> //for exit
+#include <unistd.h> //for sleep
+#include <string.h> //for  pid_t
 #include "libft.h"  // for ft_printf, ft_atoi
 
-# define BIT 8
-# define SIG_ERROR -1
-# define DELAY 100
 
-void    send_error(char *message, int pid, int sig);
-int     send_null(int pid, char *message);
-int     send_message(int pid, char *str);
-void    handler_sig(int sig);
-void    process_signal(int signum, siginfo_t *s_info, void *context);
+void send_signal(int pid, unsigned char c);
+void process_signal (int signal);
 
 #endif
