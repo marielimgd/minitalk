@@ -2,6 +2,8 @@
 NAME   = minitalk
 CLIENT = client
 SERVER = server
+CLIENT_BONUS = client_bonus
+SERVER_BONUS = server_bonus
 
 # Compiler and Flags
 CC      = gcc
@@ -26,10 +28,10 @@ SERVER_OBJ = $(OBJ_DIR)/server.o
 CLIENT_OBJ_BONUS = $(OBJ_DIR)/client_bonus.o
 SERVER_OBJ_BONUS = $(OBJ_DIR)/server_bonus.o
 
-$(NAME): all
-
+# Default Target
 all: $(CLIENT) $(SERVER)
 
+# Bonus Target
 bonus: $(CLIENT_BONUS) $(SERVER_BONUS)
 
 # Create Object Directory
@@ -74,4 +76,4 @@ fclean: clean
 re: fclean all
 
 # Phony Targets
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re
