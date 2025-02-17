@@ -3,47 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marieli <marieli@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:14:43 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/03 20:26:15 by marieli          ###   ########.fr       */
+/*   Updated: 2025/02/17 14:06:03 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/libft.h"
 
-int ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
-    long num;
-    int sign;
+	int	num;
+	int	isneg;
+	int	i;
 
-    sign = 1;
-    num = 0;
-    if (*str == '-' || *str == '+')
-    {
-        if (*str == '-')
-            sign = -1;
-        str++;
-    }
-    if (!*str)
-    {
-        ft_putendl_fd("Error\n", STDERR_FILENO);
-        exit(1);
-    }
-    while (*str)
-    {
-        if (*str < '0' || *str > '9')
-        {
-            ft_putendl_fd("Error\n", STDERR_FILENO);
-            exit(1);
-        }
-        num = num * 10 + (*str - '0');
-        if (num * sign > INT_MAX || num * sign < INT_MIN) 
-        {
-            ft_putendl_fd("Error\n", STDERR_FILENO);
-            exit(1);
-        }
-        str++;
-    }
-    return ((int)(num * sign));
+	num = 0;
+	isneg = 1;
+	i = 0;
+	while (str[i] && (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13)))
+		i++;
+	if (str[i] == '+')
+		i++;
+	else if (str[i] == '-')
+	{
+		isneg *= -1;
+		i++;
+	}
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		num = (num * 10) + (str[i] - '0');
+		i++;
+	}
+	return (num * isneg);
 }

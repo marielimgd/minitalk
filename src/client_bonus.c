@@ -6,86 +6,70 @@
 /*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:54:02 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/14 17:34:58 by mmariano         ###   ########.fr       */
+/*   Updated: 2025/02/17 15:29:01 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minitalk.h"
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-// Signal handler for confirmation
-void confirm_bits(int signal)
+void	confirm_bits(int signal)
 {
-    if (signal == SIGUSR1)
-        write(1, "Received bit 1\n", 15); // Server acknowledged a '1' bit
-    else if (signal == SIGUSR2)
-        write(1, "Received bit 0\n", 15); // Server acknowledged a '0' bit
+	if (signal == SIGUSR1)
+		write(1, "Received bit 1\n", 15);
+	else if (signal == SIGUSR2)
+		write(1, "Received bit 0\n", 15);
 }
 
-// Function to send a character bit by bit
-void send_signal(int pid, unsigned char c)
+void	send_signal(int pid, unsigned char c)
 {
-    int 		bit;
-	sigset_t 	mask;
-	sigset_t	 oldmask;
+	int			bit;
+	sigset_t	mask;
 
 	sigemptyset(&mask);
-    sigaddset(&mask, SIGUSR1);
-    sigaddset(&mask, SIGUSR2);
-    sigprocmask(SIG_BLOCK, &mask, &oldmask);
-
-    bit = 8;
-    while (bit > 0)
-    {
-        bit--;
-        if ((c >> bit) & 1) // Extract the current bit from MSB to LSB
-            kill(pid, SIGUSR1); // Send SIGUSR1 if bit = 1
-        else
-            kill(pid, SIGUSR2); // Send SIGUSR2 if bit = 0
-        usleep(100); // Small delay to ensure signals are processed in order
-
-        // Atomically unblock signals and wait for ACK
-        sigsuspend(&oldmask);
-    }
-
-    // Restore original signal mask
-    sigprocmask(SIG_SETMASK, &oldmask, NULL);
+	sigaddset(&mask, SIGUSR1);
+	sigaddset(&mask, SIGUSR2);
+	bit = 8;
+	while (bit > 0)
+	{
+		bit--;
+		if ((c >> bit) & 1)
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		usleep(100);
+		sigsuspend(&mask);
+	}
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-    int pid;
-    const char *message;
-    int c;
+	int					pid;
+	const char			*message;
+	int					c;
+	struct sigaction	sa;
 
-    // Check command-line arguments
-    if (argc != 3)
-    {
-        write(1, "Usage: ./client_bonus <pid> <message>\n", 38);
-        exit(0);
-    }
-
-    // Parse server PID and message
-    pid = ft_atoi(argv[1]);
-    message = argv[2];
-
-    // Set up the confirmation signal handler
-    struct sigaction sa;
-    sa.sa_handler = confirm_bits;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGUSR1, &sa, NULL);
-    sigaction(SIGUSR2, &sa, NULL);
-
-    // Send each character of the message
-    c = 0;
-    while (message[c])
-    {
-        send_signal(pid, message[c]);
-        c++;
-    }
-
-    // Send null terminator to indicate end of message
-    send_signal(pid, '\0');
-
-    return 0;
+	if (argc != 3)
+	{
+		write(1, "Usage: ./client <pid> <message>\n", 33);
+		exit(1);
+	}
+	pid = ft_atoi(argv[1]);
+	message = argv[2];
+	c = 0;
+	sa.sa_handler = confirm_bits;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+	while (message[c])
+	{
+		send_signal(pid, message[c]);
+		c++;
+	}
+	send_signal(pid, '\0');
+	return (0);
 }

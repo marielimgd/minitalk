@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marieli <marieli@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:54:06 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/03 17:54:09 by marieli          ###   ########.fr       */
+/*   Updated: 2025/02/17 14:08:59 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int	ft_putnbr_u(unsigned int n)
 
 int	ft_putnbr_hex(unsigned long n, int uppercase)
 {
-	char digit;
-	int count;
+	char	digit;
+	int		count;
 
 	count = 0;
 	if (n >= 16)

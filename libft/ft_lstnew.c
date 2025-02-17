@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marieli <marieli@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:16:07 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/03 17:52:58 by marieli          ###   ########.fr       */
+/*   Updated: 2025/02/17 14:08:14 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_list	*ft_lstnew(void *data)
 {
-	t_list *new_node;
+	t_list	*new_node;
 
 	new_node = malloc(sizeof(t_list));
 	if (!new_node)
