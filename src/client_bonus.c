@@ -6,7 +6,7 @@
 /*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:54:02 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/17 16:37:47 by mmariano         ###   ########.fr       */
+/*   Updated: 2025/02/17 16:35:26 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ void confirm_bits(int signal) {
         write(1, "Received bit 0\n", 15);
 }
 
-void send_signal(int pid, unsigned char c) 
-{
+void send_signal(int pid, unsigned char c) {
     int bit;
     sigset_t mask, oldmask;
 

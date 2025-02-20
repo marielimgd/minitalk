@@ -6,7 +6,7 @@
 /*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:54:13 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/17 15:28:37 by mmariano         ###   ########.fr       */
+/*   Updated: 2025/02/17 16:18:06 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	process_signal_back(int signal, siginfo_t *info, void *context)
 			write(1, &c, 1);
 		bit = 0;
 		c = 0;
+		kill(client_pid, SIGUSR1);
 	}
 }
 
