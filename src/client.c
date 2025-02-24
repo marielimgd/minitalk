@@ -6,7 +6,7 @@
 /*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:54:02 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/24 19:55:23 by mmariano         ###   ########.fr       */
+/*   Updated: 2025/02/24 20:34:08 by mmariano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,13 @@ void	confirm_bits(int signal)
 void	send_signal(int pid, unsigned char c)
 {
 	int	bit;
+	sigset_t mask;
+	sigset_t old_mask;
 
 	bit = 8;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGUSR1);
+    sigprocmask(SIG_BLOCK, &mask, &old_mask);
 	while (bit-- > 0)
 	{
 		g_received = 0;
@@ -32,8 +37,10 @@ void	send_signal(int pid, unsigned char c)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
+		usleep(420);
 		while (!g_received)
-			pause();
+			sigsuspend(&old_mask);
+    sigprocmask(SIG_SETMASK, &old_mask, NULL);
 	}
 }
 
@@ -53,7 +60,7 @@ int	main(int argc, char **argv)
 	message = argv[2];
 	c = 0;
 	sa.sa_handler = confirm_bits;
-	sa.sa_flags = 0;
+	sa.sa_flags = SA_RESTART;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGUSR1, &sa, NULL);
 	while (message[c])
