@@ -2,12 +2,10 @@
 NAME   = minitalk
 CLIENT = client
 SERVER = server
-CLIENT_BONUS = client_bonus
-SERVER_BONUS = server_bonus
 
 # Compiler and Flags
 CC      = gcc
-CFLAGS  = -Wall -Wextra -Werror
+CFLAGS  = -Wall -Wextra -Werror -g
 INCLUDES = -I includes -I libft/includes
 
 # Directories
@@ -19,20 +17,13 @@ LIBFT = $(LIBFT_DIR)/libft.a
 # Source Files
 CLIENT_SRC = $(SRC_DIR)/client.c
 SERVER_SRC = $(SRC_DIR)/server.c
-CLIENT_SRC_BONUS = $(SRC_DIR)/client_bonus.c
-SERVER_SRC_BONUS = $(SRC_DIR)/server_bonus.c
 
 # Object Files
 CLIENT_OBJ = $(OBJ_DIR)/client.o
 SERVER_OBJ = $(OBJ_DIR)/server.o
-CLIENT_OBJ_BONUS = $(OBJ_DIR)/client_bonus.o
-SERVER_OBJ_BONUS = $(OBJ_DIR)/server_bonus.o
 
 # Default Target
 all: $(CLIENT) $(SERVER)
-
-# Bonus Target
-bonus: $(CLIENT_BONUS) $(SERVER_BONUS)
 
 # Create Object Directory
 $(OBJ_DIR):
@@ -54,14 +45,6 @@ $(CLIENT): $(CLIENT_OBJ) $(LIBFT)
 $(SERVER): $(SERVER_OBJ) $(LIBFT)
 	$(CC) $(CFLAGS) $^ -o $@
 
-# Build Client Bonus
-$(CLIENT_BONUS): $(CLIENT_OBJ_BONUS) $(LIBFT)
-	$(CC) $(CFLAGS) $^ -o $@
-
-# Build Server Bonus
-$(SERVER_BONUS): $(SERVER_OBJ_BONUS) $(LIBFT)
-	$(CC) $(CFLAGS) $^ -o $@
-
 # Clean only object files
 clean:
 	rm -rf $(OBJ_DIR)
@@ -69,7 +52,7 @@ clean:
 
 # Full clean
 fclean: clean
-	rm -f $(CLIENT) $(SERVER) $(CLIENT_BONUS) $(SERVER_BONUS)
+	rm -f $(CLIENT) $(SERVER)
 	@make -C $(LIBFT_DIR) fclean
 
 # Rebuild
