@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmariano <mmariano@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: marieli <marieli@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:54:02 by marieli           #+#    #+#             */
-/*   Updated: 2025/02/24 20:34:08 by mmariano         ###   ########.fr       */
+/*   Updated: 2025/02/25 13:52:26 by marieli          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,33 @@ void	confirm_bits(int signal)
 		g_received = 1;
 }
 
-void	send_signal(int pid, unsigned char c)
+void send_signal(int pid, unsigned char c)
 {
-	int	bit;
-	sigset_t mask;
-	sigset_t old_mask;
+    int current_bit;
+    int bit_position;
+    sigset_t mask;
+    sigset_t old_mask;
 
-	bit = 8;
     sigemptyset(&mask);
     sigaddset(&mask, SIGUSR1);
     sigprocmask(SIG_BLOCK, &mask, &old_mask);
-	while (bit-- > 0)
-	{
-		g_received = 0;
-		if ((c >> bit) & 1)
-			kill(pid, SIGUSR1);
-		else
-			kill(pid, SIGUSR2);
-		usleep(420);
-		while (!g_received)
-			sigsuspend(&old_mask);
+
+    bit_position = 8;
+    while (bit_position-- > 0)
+    {
+        g_received = 0;
+        current_bit = (c >> bit_position) & 1;  // Extract bit at 'bit_position'
+        if (current_bit)
+            kill(pid, SIGUSR1);  // Send SIGUSR1 for 1-bit
+        else
+            kill(pid, SIGUSR2);  // Send SIGUSR2 for 0-bit
+        usleep(1000);
+        while (!g_received)
+            sigsuspend(&old_mask);
+    }
     sigprocmask(SIG_SETMASK, &old_mask, NULL);
-	}
 }
+
 
 int	main(int argc, char **argv)
 {
@@ -60,7 +64,7 @@ int	main(int argc, char **argv)
 	message = argv[2];
 	c = 0;
 	sa.sa_handler = confirm_bits;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = 0;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGUSR1, &sa, NULL);
 	while (message[c])

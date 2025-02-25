@@ -5,7 +5,7 @@ SERVER = server
 
 # Compiler and Flags
 CC      = gcc
-CFLAGS  = -Wall -Wextra -Werror -g
+CFLAGS  = -Wall -Wextra -Werror -g 
 INCLUDES = -I includes -I libft/includes
 
 # Directories
